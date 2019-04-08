@@ -13,6 +13,9 @@
 
 <style lang="scss">
     footer {
+        position: fixed;
+        left: 0;
+        z-index: 100;
         text-orientation: sideways;
         writing-mode: vertical-lr;
         height: 100%;
