@@ -19,13 +19,6 @@
 </script>
 
 <style lang="scss">
-    @import 'assets/scss/_variables.scss';
-
-    body {
-        background-color: $base-black !important;
-        color: $white !important;
-    }
-
     #app {
         font-family: 'Lato', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
