@@ -18,6 +18,9 @@ export default {
       word: 'hello',
       title: ''
     }
+  },
+  mounted() {
+    this.getAnimation();
   }
 }
 </script>
