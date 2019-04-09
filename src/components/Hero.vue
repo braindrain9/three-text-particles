@@ -2,7 +2,20 @@
     <div class="hero">
         <form class="form" v-on:submit.prevent="changeAnimation">
             <div class="form-group">
-                <input class="form-control" placeholder="Enter your word" v-model="word">
+                <div class="form-group">
+                    <label for="wordInput">Select color</label>
+                    <input class="form-control" id="wordInput" placeholder="Enter your word" v-model="word">
+                </div>
+
+                <div class="form-group">
+                    <label for="colorSelect">Select color</label>
+                    <select class="form-control" v-model="color" id="colorSelect">
+                        <option v-for="item in colors" v-bind:value="item.code" :key="item.code">
+                            {{item.title}}
+                        </option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary" :disabled="disabled()">Change!</button>
             </div>
         </form>
@@ -18,18 +31,29 @@
     data() {
       return {
         word: 'hello',
+        color: '#fff',
         prevWord: 'hello',
+        prevColor: '#fff',
         disabled() {
-          return !this.word || this.prevWord === this.word;
+          return !this.word || (this.prevWord === this.word && this.prevColor === this.color);
         },
         changeAnimation() {
-          this.prevWord = this.word;
-          bus.$emit('changeAnimation', this.word);
+          if (this.prevWord !== this.word) {
+            this.prevWord = this.word;
+
+            bus.$emit('changeAnimationText', this.word);
+          }
+
+          if (this.prevColor !== this.color || this.color === 'random') {
+            this.prevColor = this.color === 'random' ? Math.random() : this.color;
+
+            bus.$emit('changeAnimationColor', this.color);
+          }
         }
       }
     },
     mounted() {
-      this.getAnimation(this.word);
+      this.getAnimation(this.word, this.color);
     }
   }
 </script>
@@ -37,11 +61,16 @@
 <style scoped lang="scss">
     .form {
         position: absolute;
-        bottom: 100px;
+        bottom: 50px;
         left: calc(50% - 150px);
         z-index: 100;
 
-        input {
+        label {
+            color: $grey;
+            font-size: $base-small-font-size;
+        }
+
+        input, select {
             width: 300px;
             height: 50px;
             border: 1px solid $grey;

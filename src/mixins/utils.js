@@ -8,13 +8,46 @@ import {ParticleUtils} from './three-utils';
 const THREE = require('three');
 
 export default {
+  data() {
+    return {
+      colors: [
+        {
+          title: 'Default (white)',
+          code: '#fff'
+        },
+        {
+          title: 'Red',
+          code: '#F25F5C'
+        },
+        {
+          title: 'Pink',
+          code: '#EA526F'
+        },
+        {
+          title: 'Purple',
+          code: '#B47AEA'
+        },
+        {
+          title: 'Green',
+          code: '#09A129'
+        },
+        {
+          title: 'Blue',
+          code: '#009FFD'
+        },
+        {
+          title: 'Random',
+          code: 'random'
+        }
+      ]
+    }
+  },
   methods: {
-    getAnimation(word){
+    getAnimation(word, color){
       const particleCount = 5000,
             particleSize = 0.1,
             defaultAnimationSpeed = 1,
             morphAnimationSpeed = 0,
-            color = '#fff',
             canvasWidth = window.innerWidth,
             canvasHeight = window.innerHeight,
             fontVars = {
@@ -29,7 +62,8 @@ export default {
             windowHalfX = window.innerWidth / 2,
             windowHalfY = window.innerHeight / 2,
             typeface = '/Lato_Bold.json',
-            canvas = document.getElementById('hero-canvas');
+            canvas = document.getElementById('hero-canvas'),
+            colors = this.colors.map(color => color.code);
 
       let mouseX = 0, mouseY = 0,
           text = {};
@@ -89,17 +123,24 @@ export default {
 
         camera.lookAt(scene.position);
         particles.verticesNeedUpdate = true;
-        particleSystem.material.color = new THREE.Color(color);
 
         window.requestAnimationFrame(animate);
         renderer.render(scene, camera);
       }
 
       function enableTrigger(word, text) {
-        bus.$on("changeAnimation", (word) => {
+        bus.$on("changeAnimationText", (word) => {
           text = ParticleUtils.createTextGeometry(word, fontVars, particleCount);
 
           ParticleUtils.morphTo(animationVars, particles, text.particles);
+        });
+
+        bus.$on("changeAnimationColor", (color) => {
+          if (color === 'random') {
+            color = colors[Math.floor(Math.random() * 6)];
+          }
+
+          particleSystem.material.color = new THREE.Color(color);
         });
 
         if (text) {
