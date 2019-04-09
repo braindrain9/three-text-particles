@@ -1,8 +1,7 @@
 import {Linear, Power4, TweenMax, Power2, TweenLite, Sine} from "gsap/TweenMax";
 
 const THREE = require('three');
-
-export const GeometryUtils = {
+const GeometryUtils = {
   randomPointsInGeometry: function ( geometry, n ) {
     var face, i,
       faces = geometry.faces,
@@ -163,17 +162,17 @@ export const GeometryUtils = {
 };
 
 export const ParticleUtils = {
-  createVertices: function (particleCount, emptyArray, points) {
+  createVertices(particleCount, text) {
     for (let p = 0; p < particleCount; p++) {
       const vertex = new THREE.Vector3();
 
-      vertex.x = points[p]['x'];
-      vertex.y = points[p]['y'];
-      vertex.z = points[p]['z'];
-      emptyArray.vertices.push(vertex);
+      vertex.x = text.points[p]['x'];
+      vertex.y = text.points[p]['y'];
+      vertex.z = text.points[p]['z'];
+      text.particles.vertices.push(vertex);
     }
   },
-  fillParticles: function(particles, particleCount) {
+  fillParticles(particles, particleCount) {
     for (let p = 0; p < particleCount; p++) {
       const vertex = new THREE.Vector3();
 
@@ -183,7 +182,7 @@ export const ParticleUtils = {
       particles.vertices.push(vertex);
     }
   },
-  morphTo: function(animationVars, particles, newParticles) {
+  morphTo(animationVars, particles, newParticles) {
     TweenMax.to(animationVars, .1, {
       ease: Power4.easeIn,
       speed: animationVars.fullSpeed,
@@ -211,7 +210,7 @@ export const ParticleUtils = {
       });
     }
   },
-  animateParticles: function (particles) {
+  animateParticles(particles) {
     const maxOffset = 20,
           minTime = 2.5,
           maxTime = 4.5;
@@ -234,5 +233,16 @@ export const ParticleUtils = {
       if (min > max) { let tmp = min; min = max; max = tmp; }
       return min + (max - min) * Math.random();
     }
+  },
+  createTextGeometry(trigger, fontVars, particleCount) {
+    const text = {};
+
+    text.geometry = new THREE.TextGeometry(trigger, fontVars);
+    text.geometry.center();
+    text.particles = new THREE.Geometry();
+    text.points = GeometryUtils.randomPointsInGeometry(text.geometry, particleCount);
+    this.createVertices(particleCount, text);
+
+    return text;
   }
 };

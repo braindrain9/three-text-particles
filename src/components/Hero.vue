@@ -1,9 +1,9 @@
 <template>
     <div class="hero">
-        <form class="form">
+        <form class="form" v-on:submit.prevent="changeAnimation">
             <div class="form-group">
                 <input class="form-control" placeholder="Enter your word" v-model="word">
-                <button type="button" class="btn btn-primary">Change!</button>
+                <button type="submit" class="btn btn-primary" :disabled="disabled()">Change!</button>
             </div>
         </form>
         <canvas id="hero-canvas"></canvas>
@@ -11,18 +11,27 @@
 </template>
 
 <script>
-export default {
-  name: 'Hero',
-  data() {
-    return {
-      word: 'hello',
-      title: ''
+  import bus from '../bus';
+
+  export default {
+    name: 'Hero',
+    data() {
+      return {
+        word: 'hello',
+        prevWord: 'hello',
+        disabled() {
+          return !this.word || this.prevWord === this.word;
+        },
+        changeAnimation() {
+          this.prevWord = this.word;
+          bus.$emit('changeAnimation', this.word);
+        }
+      }
+    },
+    mounted() {
+      this.getAnimation(this.word);
     }
-  },
-  mounted() {
-    this.getAnimation();
   }
-}
 </script>
 
 <style scoped lang="scss">

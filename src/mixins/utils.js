@@ -1,12 +1,15 @@
+// eslint-disable-next-line
+/* eslint-disable */
+
 import bus from '../bus';
 import 'three/examples/js/controls/OrbitControls.js';
-import {GeometryUtils, ParticleUtils} from './three-utils';
+import {ParticleUtils} from './three-utils';
 
 const THREE = require('three');
 
 export default {
   methods: {
-    getAnimation(){
+    getAnimation(word){
       const particleCount = 5000,
             particleSize = 0.1,
             defaultAnimationSpeed = 1,
@@ -14,7 +17,7 @@ export default {
             color = '#fff',
             canvasWidth = window.innerWidth,
             canvasHeight = window.innerHeight,
-            fontConfig = {
+            fontVars = {
               size: 6,
               height: 2
             },
@@ -26,10 +29,10 @@ export default {
             windowHalfX = window.innerWidth / 2,
             windowHalfY = window.innerHeight / 2,
             typeface = '/Lato_Bold.json',
-            triggers = ['hello'],
             canvas = document.getElementById('hero-canvas');
 
-      let mouseX = 0, mouseY = 0;
+      let mouseX = 0, mouseY = 0,
+          text = {};
 
       // three.js options
       const renderer = new THREE.WebGLRenderer({canvas, alpha : true}),
@@ -57,34 +60,23 @@ export default {
 
       // particles
       const particles = new THREE.Geometry(),
-            texts = [],
             pMaterial = new THREE.PointsMaterial({
               size: particleSize,
             }),
             loader = new THREE.FontLoader();
 
       loader.load(typeface, (font) => {
-        Array.from(triggers).forEach((trigger, idx) => {
-          texts[idx] = {};
-          texts[idx].geometry = new THREE.TextGeometry(trigger, {
-            font,
-            size: fontConfig.size,
-            height: fontConfig.height
-          });
+        fontVars.font = font;
+        text = ParticleUtils.createTextGeometry(word, fontVars, particleCount);
 
-          texts[idx].geometry.center();
-          texts[idx].particles = new THREE.Geometry();
-          texts[idx].points = GeometryUtils.randomPointsInGeometry(texts[idx].geometry, particleCount);
-          ParticleUtils.createVertices(particleCount, texts[idx].particles, texts[idx].points);
-          enableTrigger(trigger, idx);
-        });
+        enableTrigger(word, text);
       });
 
       ParticleUtils.fillParticles(particles, particleCount);
 
       const particleSystem = new THREE.Points(particles, pMaterial);
 
-      ParticleUtils.animateParticles(particles);
+      // ParticleUtils.animateParticles(particles);
 
       scene.add(particleSystem);
 
@@ -103,13 +95,15 @@ export default {
         renderer.render(scene, camera);
       }
 
-      function enableTrigger(trigger, idx) {
-        bus.$on("animateParticles", index => {
-          ParticleUtils.morphTo(animationVars, particles, texts[index].particles);
+      function enableTrigger(word, text) {
+        bus.$on("changeAnimation", (word) => {
+          text = ParticleUtils.createTextGeometry(word, fontVars, particleCount);
+
+          ParticleUtils.morphTo(animationVars, particles, text.particles);
         });
 
-        if (idx === 0) {
-          ParticleUtils.morphTo(animationVars, particles, texts[idx].particles);
+        if (text) {
+          ParticleUtils.morphTo(animationVars, particles, text.particles);
         }
       }
 
