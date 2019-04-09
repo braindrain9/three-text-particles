@@ -1,4 +1,5 @@
-import {Linear, Power4, TweenMax, Elastic, Power2, TweenLite, Sine} from "gsap/TweenMax";
+import {Linear, Power4, TweenMax, Power2, TweenLite, Sine} from "gsap/TweenMax";
+
 const THREE = require('three');
 
 export const GeometryUtils = {
@@ -182,7 +183,7 @@ export const ParticleUtils = {
       particles.vertices.push(vertex);
     }
   },
-  morphToServices: function(animationVars, particles, newParticles) {
+  morphTo: function(animationVars, particles, newParticles) {
     TweenMax.to(animationVars, .1, {
       ease: Power4.easeIn,
       speed: animationVars.fullSpeed,
@@ -210,44 +211,6 @@ export const ParticleUtils = {
       });
     }
   },
-  morphTo: function(animationVars, particles, newParticles) {
-    TweenMax.to(animationVars, .1, {
-      ease: Power4.easeIn,
-      speed: animationVars.fullSpeed,
-      onComplete: slowDown
-    });
-
-    TweenMax.to(animationVars, 2, {
-      ease: Linear.easeNone
-    });
-
-    particles.vertices.forEach((point, i) => {
-      TweenMax.to(point, 2, {
-        ease: Elastic.easeOut.config( 0.1, .3),
-        x: newParticles.vertices[i].x,
-        y: newParticles.vertices[i].y,
-        z: newParticles.vertices[i].z
-      })
-    });
-
-    TweenMax.to(animationVars, 2, {
-      ease: Elastic.easeOut.config( 0.1, .3),
-      rotation: animationVars.rotation === 45 ? -45 : 45,
-    });
-
-    function slowDown () {
-      TweenMax.to(animationVars, 0.3, {
-        ease: Power2.easeOut,
-        speed: animationVars.normalSpeed,
-        delay: 0.2
-      });
-    }
-  },
-  random: function(min, max) {
-    if (max == null) { max = min; min = 0; }
-    if (min > max) { var tmp = min; min = max; max = tmp; }
-    return min + (max - min) * Math.random();
-  },
   animateParticles: function (particles) {
     const maxOffset = 20,
           minTime = 2.5,
@@ -255,9 +218,9 @@ export const ParticleUtils = {
 
     particles.vertices.forEach((particle) => {
       const animateXY = () => {
-        return TweenLite.to(particle, this.random(minTime, maxTime), {
-          x: this.random(particle.x - maxOffset, particle.x + maxOffset),
-          y: this.random(particle.y - maxOffset, particle.y + maxOffset),
+        return TweenLite.to(particle, random(minTime, maxTime), {
+          x: random(particle.x - maxOffset, particle.x + maxOffset),
+          y: random(particle.y - maxOffset, particle.y + maxOffset),
           ease: Sine.easeInOut,
           onComplete: animateXY
         });
@@ -265,5 +228,11 @@ export const ParticleUtils = {
 
       animateXY().progress(Math.random());
     });
+
+    function random(min, max) {
+      if (max == null) { max = min; min = 0; }
+      if (min > max) { let tmp = min; min = max; max = tmp; }
+      return min + (max - min) * Math.random();
+    }
   }
-}
+};

@@ -1,45 +1,42 @@
-// eslint-disable-next-line
-/* eslint-disable */
-
 import bus from '../bus';
-require('three/examples/js/controls/OrbitControls.js');
-import {GeometryUtils, ParticleUtils} from './three';
+import 'three/examples/js/controls/OrbitControls.js';
+import {GeometryUtils, ParticleUtils} from './three-utils';
+
 const THREE = require('three');
 
 export default {
   methods: {
     getAnimation(){
       const particleCount = 5000,
-        particleSize = 0.1,
-        defaultAnimationSpeed = 1,
-        morphAnimationSpeed = 0,
-        color = '#fff',
-        canvasWidth = window.innerWidth,
-        canvasHeight = window.innerHeight,
-        fontConfig = {
-          size: 6,
-          height: 2
-        },
-        animationVars = {
-          speed: defaultAnimationSpeed/300,
-          normalSpeed: defaultAnimationSpeed/300,
-          fullSpeed: morphAnimationSpeed/100
-        },
-        windowHalfX = window.innerWidth / 2,
-        windowHalfY = window.innerHeight / 2,
-        maxOffset = 8,
-        typeface = '/Lato_Bold.json',
-        triggers = ['hello'];
+            particleSize = 0.1,
+            defaultAnimationSpeed = 1,
+            morphAnimationSpeed = 0,
+            color = '#fff',
+            canvasWidth = window.innerWidth,
+            canvasHeight = window.innerHeight,
+            fontConfig = {
+              size: 6,
+              height: 2
+            },
+            animationVars = {
+              speed: defaultAnimationSpeed/300,
+              normalSpeed: defaultAnimationSpeed/300,
+              fullSpeed: morphAnimationSpeed/100
+            },
+            windowHalfX = window.innerWidth / 2,
+            windowHalfY = window.innerHeight / 2,
+            typeface = '/Lato_Bold.json',
+            triggers = ['hello'],
+            canvas = document.getElementById('hero-canvas');
 
       let mouseX = 0, mouseY = 0;
 
       // three.js options
-      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('hero-canvas'), alpha : true}),
-        scene = new THREE.Scene(),
-        camera = new THREE.PerspectiveCamera( 45, canvasWidth / canvasHeight, 1, 10000 ),
-        light = new THREE.AmbientLight( 0xFFFFFF, 1 ),
-        raycaster = new THREE.Raycaster(),
-        mouse = new THREE.Vector2();
+      const renderer = new THREE.WebGLRenderer({canvas, alpha : true}),
+            scene = new THREE.Scene(),
+            camera = new THREE.PerspectiveCamera( 45, canvasWidth / canvasHeight, 1, 10000 ),
+            light = new THREE.AmbientLight( 0xFFFFFF, 1 ),
+            mouse = new THREE.Vector2();
 
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(canvasWidth, canvasHeight);
@@ -85,47 +82,6 @@ export default {
 
       ParticleUtils.fillParticles(particles, particleCount);
 
-      // if (!this.isTouchDevice()) {
-      document.getElementById('hero-canvas').onmousemove = function (e) {
-        // e.preventDefault();
-
-        mouseX = e.clientX - windowHalfX;
-        mouseY = e.clientY - windowHalfY;
-
-        mouse.x = (e.clientX / renderer.domElement.clientWidth) * 2 - 1;
-        mouse.y = - (e.clientY / renderer.domElement.clientHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        let intersects = raycaster.intersectObjects(scene.children, true);
-
-        // if (intersects.length > 0) {
-        //   intersects = intersects.filter(obj => obj.distanceToRay < 0.8);
-        //   intersects.forEach((obj, i) => {
-        //     const index = intersects[i].index,
-        //       point = particles.vertices[index],
-        //       startX = point.x,
-        //       startY = point.y;
-        //
-        //     TweenMax.to(point, 1, {
-        //       x: ParticleUtils.random(point.x - maxOffset / 2, point.x + maxOffset / 2),
-        //       y: ParticleUtils.random(point.y - maxOffset / 2, point.y + maxOffset / 2),
-        //       ease: Sine.easeInOut,
-        //       onComplete
-        //     });
-        //
-        //     function onComplete() {
-        //       TweenMax.to(point, 1.5, {
-        //         x: startX,
-        //         y: startY,
-        //         ease: Power2.easeOut,
-        //         speed: animationVars.normalSpeed,
-        //         delay: 0.1
-        //       });
-        //     }
-        //   })
-        // }
-      };
-
       const particleSystem = new THREE.Points(particles, pMaterial);
 
       ParticleUtils.animateParticles(particles);
@@ -148,14 +104,25 @@ export default {
       }
 
       function enableTrigger(trigger, idx) {
-        bus.$on("animateServicesParticles", index => {
-          ParticleUtils.morphToServices(animationVars, particles, texts[index].particles);
+        bus.$on("animateParticles", index => {
+          ParticleUtils.morphTo(animationVars, particles, texts[index].particles);
         });
 
         if (idx === 0) {
-          ParticleUtils.morphToServices(animationVars, particles, texts[idx].particles);
+          ParticleUtils.morphTo(animationVars, particles, texts[idx].particles);
         }
       }
+
+      // mouse over effects
+      canvas.onmousemove = function (e) {
+        e.preventDefault();
+
+        mouseX = e.clientX - windowHalfX;
+        mouseY = e.clientY - windowHalfY;
+
+        mouse.x = (e.clientX / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = - (e.clientY / renderer.domElement.clientHeight) * 2 + 1;
+      };
     }
   }
 }
