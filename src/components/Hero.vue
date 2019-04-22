@@ -74,6 +74,9 @@
         })
       },
       initAnimation() {
+        const refs = ['circleBig', 'circleSmall', 'rectangleBlue', 'rectanglePurple',
+          'rectangleLightBlue', 'rectangleTiny', 'rectangleTiny2'];
+
         new TimelineMax()
           .fromTo(this.$refs.circleBig, 2,
             {autoAlpha: 0, x: -200, y: 200, scale: 0},
@@ -84,9 +87,6 @@
             {autoAlpha: 0, x: 200, y: -200, scale: 0},
             {autoAlpha: 1, x: 0, y: 0, scale: 1}
           );
-
-        const refs = ['circleBig', 'circleSmall', 'rectangleBlue', 'rectanglePurple',
-          'rectangleLightBlue', 'rectangleTiny', 'rectangleTiny2'];
 
         refs.forEach(ref => this.animateRectangle(this.$refs[ref]));
       }
