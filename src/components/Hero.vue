@@ -2,22 +2,10 @@
     <div class="hero">
         <form class="form" v-on:submit.prevent="changeAnimation">
             <div class="form-group">
-                <div class="form-group">
-                    <label for="wordInput">Select color</label>
-                    <input class="form-control" id="wordInput" placeholder="Enter your word" v-model="word">
-                </div>
-
-                <div class="form-group">
-                    <label for="colorSelect">Select color</label>
-                    <select class="form-control" v-model="color" id="colorSelect">
-                        <option v-for="item in colors" v-bind:value="item.code" :key="item.code">
-                            {{item.title}}
-                        </option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary" :disabled="disabled()">Change!</button>
+                <input class="form-control" placeholder="Enter your word" v-model="word">
+                <el-color-picker @change="changeAnimation" v-model="color"></el-color-picker>
             </div>
+            <button type="submit" class="btn btn-primary" :disabled="disabled()">Change!</button>
         </form>
         <div ref="circleBig" class="circle big"></div>
         <div ref="circleSmall" class="circle small"></div>
@@ -39,9 +27,9 @@
     data() {
       return {
         word: 'hello',
-        color: '#fff',
         prevWord: 'hello',
-        prevColor: '#fff',
+        color: '#1C62E4',
+        prevColor: '#1C62E4',
         disabled() {
           return !this.word || (this.prevWord === this.word && this.prevColor === this.color);
         }
@@ -58,8 +46,8 @@
           bus.$emit('changeAnimationText', this.word);
         }
 
-        if (this.prevColor !== this.color || this.color === 'random') {
-          this.prevColor = this.color === 'random' ? Math.random() : this.color;
+        if (this.prevColor !== this.color) {
+          this.prevColor = this.color;
 
           bus.$emit('changeAnimationColor', this.color);
         }
@@ -101,27 +89,25 @@
 <style scoped lang="scss">
     .form {
         position: absolute;
-        bottom: 50px;
+        bottom: 100px;
         left: calc(50% - 150px);
         z-index: 100;
 
-        label {
-            color: $grey;
-            font-size: $base-small-font-size;
+        button, input {
+            height: 40px;
         }
 
-        input, select {
-            width: 300px;
-            height: 50px;
+        input {
+            width: 260px;
             border: 1px solid $grey;
             background-color: #252525;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: $white;
+            float: left;
         }
 
         button {
             width: 300px;
-            height: 50px;
             background: linear-gradient(100.24deg, #3840FF 0%, rgba(26, 31, 145, 0.58) 100%);
         }
     }
