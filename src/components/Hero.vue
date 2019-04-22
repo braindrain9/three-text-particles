@@ -19,19 +19,20 @@
                 <button type="submit" class="btn btn-primary" :disabled="disabled()">Change!</button>
             </div>
         </form>
-        <div class="circle big"></div>
-        <div class="circle small"></div>
-        <div class="rectangle blue"></div>
-        <div class="rectangle purple"></div>
-        <div class="rectangle light-blue"></div>
-        <div class="rectangle tiny"></div>
-        <div class="rectangle tiny tiny-2"></div>
+        <div ref="circleBig" class="circle big"></div>
+        <div ref="circleSmall" class="circle small"></div>
+        <div ref="rectangleBlue" class="rectangle blue"></div>
+        <div ref="rectanglePurple" class="rectangle purple"></div>
+        <div ref="rectangleLightBlue" class="rectangle light-blue"></div>
+        <div ref="rectangleTiny" class="rectangle tiny"></div>
+        <div ref="rectangleTiny2" class="rectangle tiny tiny-2"></div>
         <canvas id="hero-canvas"></canvas>
     </div>
 </template>
 
 <script>
   import bus from '../bus';
+  import {TweenMax, TimelineMax} from 'gsap/TweenMax';
 
   export default {
     name: 'Hero',
@@ -43,24 +44,56 @@
         prevColor: '#fff',
         disabled() {
           return !this.word || (this.prevWord === this.word && this.prevColor === this.color);
-        },
-        changeAnimation() {
-          if (this.prevWord !== this.word) {
-            this.prevWord = this.word;
-
-            bus.$emit('changeAnimationText', this.word);
-          }
-
-          if (this.prevColor !== this.color || this.color === 'random') {
-            this.prevColor = this.color === 'random' ? Math.random() : this.color;
-
-            bus.$emit('changeAnimationColor', this.color);
-          }
         }
+      }
+    },
+    methods: {
+      getRandom(deviation) {
+        return ((Math.random() * deviation + Math.random() * (deviation) * (-1)) / 2);
+      },
+      changeAnimation() {
+        if (this.prevWord !== this.word) {
+          this.prevWord = this.word;
+
+          bus.$emit('changeAnimationText', this.word);
+        }
+
+        if (this.prevColor !== this.color || this.color === 'random') {
+          this.prevColor = this.color === 'random' ? Math.random() : this.color;
+
+          bus.$emit('changeAnimationColor', this.color);
+        }
+      },
+      animateRectangle(element) {
+        const duration = 3 + Math.random() * 3;
+
+        TweenMax.to(element, duration, {
+          x: element.style.left + this.getRandom(100),
+          y: element.style.top + this.getRandom(100),
+          onComplete: this.animateRectangle.bind(this, element)
+        })
+      },
+      initAnimation() {
+        new TimelineMax()
+          .fromTo(this.$refs.circleBig, 2,
+            {autoAlpha: 0, x: -200, y: 200, scale: 0},
+            {autoAlpha: 1, x: 0, y: 0, scale: 1}
+          );
+        new TimelineMax()
+          .fromTo(this.$refs.circleSmall, 2,
+            {autoAlpha: 0, x: 200, y: -200, scale: 0},
+            {autoAlpha: 1, x: 0, y: 0, scale: 1}
+          );
+
+        const refs = ['circleBig', 'circleSmall', 'rectangleBlue', 'rectanglePurple',
+          'rectangleLightBlue', 'rectangleTiny', 'rectangleTiny2'];
+
+        refs.forEach(ref => this.animateRectangle(this.$refs[ref]));
       }
     },
     mounted() {
       this.getAnimation(this.word, this.color);
+      this.initAnimation();
     }
   }
 </script>
