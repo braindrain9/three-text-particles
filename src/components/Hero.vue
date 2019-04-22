@@ -19,6 +19,13 @@
                 <button type="submit" class="btn btn-primary" :disabled="disabled()">Change!</button>
             </div>
         </form>
+        <div class="circle big"></div>
+        <div class="circle small"></div>
+        <div class="rectangle blue"></div>
+        <div class="rectangle purple"></div>
+        <div class="rectangle light-blue"></div>
+        <div class="rectangle tiny"></div>
+        <div class="rectangle tiny tiny-2"></div>
         <canvas id="hero-canvas"></canvas>
     </div>
 </template>
@@ -83,6 +90,65 @@
             width: 300px;
             height: 50px;
             background: linear-gradient(100.24deg, #3840FF 0%, rgba(26, 31, 145, 0.58) 100%);
+        }
+    }
+
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(40, 46, 188, 0.29) 0%, rgba(2, 3, 2, 0) 55%);
+
+        &.big {
+            width: 820px;
+            height: 820px;
+            left: -100px;
+            top: 640px;
+        }
+
+        &.small {
+            width: 310px;
+            height: 310px;
+            right: 100px;
+            top: 90px;
+        }
+    }
+
+    .rectangle {
+        position: absolute;
+        width: 8px;
+
+        &.blue {
+            height: 85px;
+            left: 270px;
+            top: 785px;
+            background: #3E45FF;
+        }
+
+        &.purple {
+            height: 70px;
+            right: 300px;
+            top: 897px;
+            background: #6635CD;
+            transform: rotate(-90deg);
+        }
+
+        &.tiny {
+            background: #7D64E2;
+            height: 8px;
+            left: 356px;
+            top: 201px;
+
+            &.tiny-2 {
+                top: 232px;
+            }
+        }
+
+        &.light-blue {
+            background: #4759F4;
+            width: 35px;
+            height: 35px;
+            right: 300px;
+            top: 215px;
         }
     }
 </style>
