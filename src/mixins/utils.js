@@ -158,6 +158,16 @@ export default {
         mouse.x = (e.clientX / renderer.domElement.clientWidth) * 2 - 1;
         mouse.y = - (e.clientY / renderer.domElement.clientHeight) * 2 + 1;
       };
+
+      // on resize
+      function fullScreen () {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      window.addEventListener('resize', fullScreen, false)
     }
   }
 }
